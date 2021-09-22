@@ -1,5 +1,5 @@
 const f = () => {
-  return "hello"
+  return 'hello'
 }
 
-var x = "string"
+const x = 'string'
