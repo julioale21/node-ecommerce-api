@@ -11,19 +11,35 @@ const api = process.env.API_URL
 app.use(express.json())
 app.use(morgan('tiny'))
 
-app.get(`${api}/products`, (req, res) => {
-  const product = {
-    id: 1,
-    name: 'Hair dresser',
-    image: 'some url'
+const productSchema = mongoose.Schema({
+  name: String,
+  description: {
+    type: String,
+    required: true
   }
-  res.send(product)
+})
+
+const Product = mongoose.model('Product', productSchema)
+
+app.get(`${api}/products`, async (req, res) => {
+  const productList = await Product.find()
+  res.send(productList)
 })
 
 app.post(`${api}/products`, (req, res) => {
-  const newProduct = req.body
-  console.log(newProduct)
-  res.send(newProduct)
+  const product = new Product({
+    ...req.body
+  })
+  product.save()
+    .then((createdProduct) => {
+      res.status(201).json(createdProduct)
+    })
+    .catch((error) => {
+      res.status(500).json({
+        error,
+        success: false
+      })
+    })
 })
 
 mongoose.connect(process.env.CONNECTION_STRING)
@@ -33,6 +49,5 @@ mongoose.connect(process.env.CONNECTION_STRING)
   .catch((err) => console.log(err))
 
 app.listen(3000, () => {
-  console.log(api)
   console.log('app running on http://localhost:3000')
 })
