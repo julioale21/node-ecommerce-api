@@ -23,6 +23,11 @@ const Product = mongoose.model('Product', productSchema)
 
 app.get(`${api}/products`, async (req, res) => {
   const productList = await Product.find()
+
+  if (!productList) {
+    res.status(500).json({ success: false })
+  }
+
   res.send(productList)
 })
 
