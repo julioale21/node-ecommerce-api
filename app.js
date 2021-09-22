@@ -6,7 +6,7 @@ const cors = require('cors')
 const productRouter = require('./routes/products')
 
 app.use(cors())
-app.options('*', cors)
+app.options('*', cors())
 
 require('dotenv/config')
 
