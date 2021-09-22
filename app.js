@@ -5,8 +5,22 @@ require('dotenv/config')
 
 const api = process.env.API_URL
 
-app.get(api + '/products', (req, res) => {
-  res.send('from products')
+// Middleware
+app.use(express.json())
+
+app.get(`${api}/products`, (req, res) => {
+  const product = {
+    id: 1,
+    name: 'Hair dresser',
+    image: 'some url'
+  }
+  res.send(product)
+})
+
+app.post(`${api}/products`, (req, res) => {
+  const newProduct = req.body
+  console.log(newProduct)
+  res.send(newProduct)
 })
 
 app.listen(3000, () => {
