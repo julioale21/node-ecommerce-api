@@ -42,6 +42,27 @@ router.post('/', async (req, res) => {
   res.send(category)
 })
 
+router.put('/:id', async (req, res) => {
+  const category = await Category.findByIdAndUpdate(
+    req.params.id,
+    {
+      name: req.body.name,
+      icon: req.body.icon,
+      color: req.body.color
+    },
+    {
+      new: true
+    }
+  )
+  if (!category) {
+    res.status(404).json({
+      success: false,
+      message: 'Category could not be updated'
+    })
+  }
+  res.status(200).send(category)
+})
+
 router.delete('/:id', async (req, res) => {
   try {
     const deletedCategory = await Category.findByIdAndRemove(req.params.id)
