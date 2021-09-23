@@ -3,7 +3,8 @@ const app = express()
 const morgan = require('morgan')
 const mongoose = require('mongoose')
 const cors = require('cors')
-const productRouter = require('./routes/products')
+const productsRouter = require('./routes/products')
+const categoriesRouter = require('./routes/categories')
 
 app.use(cors())
 app.options('*', cors())
@@ -16,7 +17,8 @@ app.use(morgan('tiny'))
 
 const api = process.env.API_URL
 
-app.use(`${api}/products`, productRouter)
+app.use(`${api}/products`, productsRouter)
+app.use(`${api}/categories`, categoriesRouter)
 
 mongoose.connect(process.env.CONNECTION_STRING)
   .then(() => {
