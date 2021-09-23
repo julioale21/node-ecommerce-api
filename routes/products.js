@@ -29,10 +29,7 @@ router.post('/', async (req, res) => {
   try {
     const category = await Category.findById(req.body.category)
     if (!category) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid Category'
-      })
+      return res.status(400).json({ success: false, message: 'Invalid Category' })
     }
 
     let product = new Product({
@@ -51,35 +48,23 @@ router.post('/', async (req, res) => {
     product = await product.save()
 
     if (!product) {
-      res.status(500).json({
-        success: false,
-        message: 'Product could not be created'
-      })
+      res.status(500).json({ success: false, message: 'Product could not be created' })
     }
     res.status(200).send(product)
   } catch (error) {
-    res.status(400).json({
-      success: false,
-      error
-    })
+    res.status(400).json({ success: false, error })
   }
 })
 
 router.put('/:id', async (req, res) => {
   if (!mongoose.isValidObjectId(req.params.id)) {
-    return res.status(400).json({
-      success: false,
-      message: 'Invalid Product id'
-    })
+    return res.status(400).json({ success: false, message: 'Invalid Product id' })
   }
 
   try {
     const category = await Category.findById(req.body.category)
     if (!category) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid Category'
-      })
+      return res.status(400).json({ success: false, message: 'Invalid Category' })
     }
 
     const product = await Product.findByIdAndUpdate(
@@ -101,45 +86,37 @@ router.put('/:id', async (req, res) => {
     )
 
     if (!product) {
-      res.status(500).json({
-        success: false,
-        message: 'Product could not be updated'
-      })
+      res.status(500).json({ success: false, message: 'Product could not be updated' })
     }
     res.status(200).send(product)
   } catch (error) {
-    res.status(400).json({
-      success: false,
-      error
-    })
+    res.status(400).json({ success: false, error })
   }
 })
 
 router.delete('/:id', async (req, res) => {
   if (!mongoose.isValidObjectId(req.params.id)) {
-    return res.status(400).json({
-      success: false,
-      message: 'Invalid Product id'
-    })
+    return res.status(400).json({ success: false, message: 'Invalid Product id' })
   }
 
   try {
     const deletedProduct = await Product.findByIdAndDelete(req.params.id)
     if (!deletedProduct) {
-      res.status(404).json({
-        success: false,
-        message: 'Product could not be deleted'
-      })
+      res.status(404).json({ success: false, message: 'Product could not be deleted' })
     }
-    res.status(200).json({
-      success: true,
-      message: 'Product successfully deleted'
-    })
+    res.status(200).json({ success: true, message: 'Product successfully deleted' })
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      error
-    })
+    res.status(500).json({ success: false, error })
   }
 })
+
+router.get('/get/count', async (req, res) => {
+  const productCount = await Product.find().count()
+
+  if (!productCount) {
+    res.status(500).json({ success: false })
+  }
+  res.send({ count: productCount })
+})
+
 module.exports = router
