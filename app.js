@@ -11,7 +11,7 @@ app.options('*', cors())
 
 require('dotenv/config')
 
-// Middleware
+// Middlewares
 app.use(express.json())
 app.use(morgan('tiny'))
 
