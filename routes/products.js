@@ -4,8 +4,14 @@ const Category = require('../models/category')
 const Product = require('../models/product')
 const mongoose = require('mongoose')
 
+// api/v1/products?categories=3232,23123
 router.get('/', async (req, res) => {
-  const productList = await Product.find()
+  let filter = {}
+  if (req.query.categories) {
+    filter = { category: req.query.categories.split(',') }
+  }
+
+  const productList = await Product.find(filter).populate('category')
 
   if (!productList) {
     res.status(500).json({ success: false })
@@ -119,10 +125,12 @@ router.get('/get/count', async (req, res) => {
   res.send({ count: productCount })
 })
 
-router.get('/get/featured', async (req, res) => {
+router.get('/get/featured/:count', async (req, res) => {
+  const count = req.params.count ? req.params.count : 1
+  console.log('count', count)
   const products = await Product.find({
     isFeature: true
-  })
+  }).limit(+count)
 
   if (!products) {
     res.status(500).json({ success: false })
