@@ -119,4 +119,15 @@ router.get('/get/count', async (req, res) => {
   res.send({ count: productCount })
 })
 
+router.get('/get/featured', async (req, res) => {
+  const products = await Product.find({
+    isFeature: true
+  })
+
+  if (!products) {
+    res.status(500).json({ success: false })
+  }
+  res.send(products)
+})
+
 module.exports = router
