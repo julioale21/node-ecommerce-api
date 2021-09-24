@@ -136,7 +136,7 @@ router.get('/get/totalsales', async (req, res) => {
   if (!totalSales) {
     return res.status(400).send('The report could not be generated')
   }
-  res.json({ totalSales: totalSales })
+  res.json({ totalSales: totalSales.pop().totalSales })
 })
 
 module.exports = router
