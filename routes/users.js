@@ -1,4 +1,5 @@
 const express = require('express')
+const mongoose = require('mongoose')
 const User = require('../models/user')
 const router = express.Router()
 const bcrypt = require('bcryptjs')
@@ -88,6 +89,22 @@ router.post('/register', async (req, res) => {
     return res.status(400).send('User cannot be created.')
   }
   res.send(user)
+})
+
+router.delete('/:id', async (req, res) => {
+  if (!mongoose.isValidObjectId(req.params.id)) {
+    return res.status(400).json({ success: false, message: 'Invalid User id' })
+  }
+
+  try {
+    const deletedUser = await User.findByIdAndRemove(req.params.id)
+    if (!deletedUser) {
+      return res.status(404).json({ success: false, message: 'User could not be deleted' })
+    }
+    return res.status(200).json({ success: true, message: 'User successfully deleted' })
+  } catch (error) {
+    return res.status(500).json({ success: false, error })
+  }
 })
 
 router.get('/get/count', async (req, res) => {
