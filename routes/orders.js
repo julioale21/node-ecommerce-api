@@ -30,6 +30,41 @@ router.get('/:id', async (req, res) => {
   res.send(order)
 })
 
+router.get('/get/userorders/:userid', async (req, res) => {
+  const orderList = await Order.find({ user: req.params.userid })
+    .populate({
+      path: 'orderItems',
+      populate: {
+        path: 'product', populate: 'category'
+      }
+    }).sort({ dateOrdered: -1 })
+
+  if (!orderList) {
+    res.status(500).json({ success: false })
+  }
+  res.send(orderList)
+})
+
+router.get('/get/totalsales', async (req, res) => {
+  const totalSales = await Order.aggregate([
+    { $group: { _id: null, totalSales: { $sum: '$totalPrice' } } }
+  ])
+
+  if (!totalSales) {
+    return res.status(400).send('The report could not be generated')
+  }
+  res.json({ totalSales: totalSales.pop().totalSales })
+})
+
+router.get('/get/count', async (req, res) => {
+  const orderCount = await Order.find().count()
+
+  if (!orderCount) {
+    res.status(500).json({ success: false })
+  }
+  res.send({ count: orderCount })
+})
+
 router.post('/', async (req, res) => {
   const orderItemsIds = Promise.all(req.body.orderItems.map(async (orderItem) => {
     let newOrderItem = new OrderItem({
@@ -126,26 +161,6 @@ router.delete('/:id', async (req, res) => {
   }).catch((err) => {
     return res.status(500).json({ success: false, error: err })
   })
-})
-
-router.get('/get/totalsales', async (req, res) => {
-  const totalSales = await Order.aggregate([
-    { $group: { _id: null, totalSales: { $sum: '$totalPrice' } } }
-  ])
-
-  if (!totalSales) {
-    return res.status(400).send('The report could not be generated')
-  }
-  res.json({ totalSales: totalSales.pop().totalSales })
-})
-
-router.get('/get/count', async (req, res) => {
-  const orderCount = await Order.find().count()
-
-  if (!orderCount) {
-    res.status(500).json({ success: false })
-  }
-  res.send({ count: orderCount })
 })
 
 module.exports = router
