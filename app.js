@@ -7,6 +7,7 @@ const productsRouter = require('./routes/products')
 const categoriesRouter = require('./routes/categories')
 const usersRouter = require('./routes/users')
 const authJwt = require('./helpers/jwt')
+const errorHandler = require('./helpers/error-handler')
 
 app.use(cors())
 app.options('*', cors())
@@ -16,7 +17,8 @@ require('dotenv/config')
 // Middlewares
 app.use(express.json())
 app.use(morgan('tiny'))
-//app.use(authJwt())
+app.use(authJwt())
+app.use(errorHandler)
 
 const api = process.env.API_URL
 
