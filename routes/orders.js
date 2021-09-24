@@ -77,4 +77,25 @@ router.put('/:id', async (req, res) => {
   res.send(order)
 })
 
+router.delete('/:id', async (req, res) => {
+  try {
+    const deletedOrder = await Order.findByIdAndRemove(req.params.id)
+    if (!deletedOrder) {
+      res.status(404).json({
+        success: false,
+        message: 'Order not found.'
+      })
+    }
+    res.status(200).json({
+      success: true,
+      message: 'The order was successfully deleted.'
+    })
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error
+    })
+  }
+})
+
 module.exports = router
