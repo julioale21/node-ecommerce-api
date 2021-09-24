@@ -77,25 +77,47 @@ router.put('/:id', async (req, res) => {
   res.send(order)
 })
 
+// router.delete('/:id', async (req, res) => {
+//   try {
+//     const order = await Order.findById(req.params.id)
+//     const removeItemsId = Promise.all(order.orderItems.map(async (item) => {
+//       const removed = await OrderItem.findByIdAndRemove(item)
+//       return removed
+//     }))
+//     await removeItemsId
+
+//     const deletedOrder = await Order.findByIdAndRemove(req.params.id)
+//     if (!deletedOrder) {
+//       res.status(404).json({
+//         success: false,
+//         message: 'Order not found.'
+//       })
+//     }
+//     res.status(200).json({
+//       success: true,
+//       message: 'The order was successfully deleted.'
+//     })
+//   } catch (error) {
+//     res.status(400).json({
+//       success: false,
+//       error
+//     })
+//   }
+// })
+
 router.delete('/:id', async (req, res) => {
-  try {
-    const deletedOrder = await Order.findByIdAndRemove(req.params.id)
-    if (!deletedOrder) {
-      res.status(404).json({
-        success: false,
-        message: 'Order not found.'
+  Order.findByIdAndRemove(req.params.id).then(async (order) => {
+    if (order) {
+      await order.orderItems.map(async (orderItem) => {
+        await OrderItem.findByIdAndRemove(orderItem)
       })
+      return res.status(200).json({ success: true, message: 'Order successfully deleted' })
+    } else {
+      return res.status(404).json({ success: false, message: 'Order not found' })
     }
-    res.status(200).json({
-      success: true,
-      message: 'The order was successfully deleted.'
-    })
-  } catch (error) {
-    res.status(400).json({
-      success: false,
-      error
-    })
-  }
+  }).catch((err) => {
+    return res.status(500).json({ success: false, error: err })
+  })
 })
 
 module.exports = router
