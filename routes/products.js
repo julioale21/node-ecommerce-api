@@ -59,20 +59,69 @@ router.get('/:id', async (req, res) => {
 })
 
 router.post('/', uploadOptions.single('image'), async (req, res) => {
-  try {
-    const category = await Category.findById(req.body.category)
-    if (!category) {
-      return res.status(400).json({ success: false, message: 'Invalid Category' })
-    }
+  const category = await Category.findById(req.body.category)
+  if (!category) {
+    return res.status(400).json({ success: false, message: 'Invalid Category' })
+  }
 
-    const fileName = req.file.filename
+  const file = req.file
+  if (!file) return res.status(400).send('No image in the request')
+
+  const fileName = req.file.filename
+  const basePath = `${req.protocol}://${req.get('host')}/public/uploads/`
+
+  let product = new Product({
+    name: req.body.name,
+    description: req.body.description,
+    richDescription: req.body.richDescription,
+    image: `${basePath}${fileName}`,
+    brand: req.body.brand,
+    price: req.body.price,
+    category: req.body.category,
+    countInStock: req.body.countInStock,
+    rating: req.body.rating,
+    numReviews: req.body.numReviews,
+    isFeature: req.body.isFeature
+  })
+  product = await product.save()
+
+  if (!product) {
+    res.status(500).json({ success: false, message: 'Product could not be created' })
+  }
+  res.status(200).send(product)
+})
+
+router.put('/:id', uploadOptions.single('image'), async (req, res) => {
+  if (!mongoose.isValidObjectId(req.params.id)) {
+    return res.status(400).json({ success: false, message: 'Invalid Product id' })
+  }
+
+  const category = await Category.findById(req.body.category)
+  if (!category) {
+    return res.status(400).json({ success: false, message: 'Invalid Category' })
+  }
+
+  const product = await Product.findById(req.params.id)
+  if (!product) return res.status(400).send('Invalid product')
+
+  const file = req.file
+  let imagepath
+
+  if (file) {
+    const fileName = file.filename
     const basePath = `${req.protocol}://${req.get('host')}/public/uploads/`
+    imagepath = `${basePath}${fileName}`
+  } else {
+    imagepath = product.image
+  }
 
-    let product = new Product({
+  const updatedProduct = await Product.findByIdAndUpdate(
+    req.params.id,
+    {
       name: req.body.name,
       description: req.body.description,
       richDescription: req.body.richDescription,
-      image: `${basePath}${fileName}`,
+      image: imagepath,
       brand: req.body.brand,
       price: req.body.price,
       category: req.body.category,
@@ -80,54 +129,14 @@ router.post('/', uploadOptions.single('image'), async (req, res) => {
       rating: req.body.rating,
       numReviews: req.body.numReviews,
       isFeature: req.body.isFeature
-    })
-    product = await product.save()
+    },
+    { new: true }
+  )
 
-    if (!product) {
-      res.status(500).json({ success: false, message: 'Product could not be created' })
-    }
-    res.status(200).send(product)
-  } catch (error) {
-    res.status(400).json({ success: false, error })
+  if (!updatedProduct) {
+    res.status(500).json({ success: false, message: 'Product could not be updated' })
   }
-})
-
-router.put('/:id', async (req, res) => {
-  if (!mongoose.isValidObjectId(req.params.id)) {
-    return res.status(400).json({ success: false, message: 'Invalid Product id' })
-  }
-
-  try {
-    const category = await Category.findById(req.body.category)
-    if (!category) {
-      return res.status(400).json({ success: false, message: 'Invalid Category' })
-    }
-
-    const product = await Product.findByIdAndUpdate(
-      req.params.id,
-      {
-        name: req.body.name,
-        description: req.body.description,
-        richDescription: req.body.richDescription,
-        image: req.body.image,
-        brand: req.body.brand,
-        price: req.body.price,
-        category: req.body.category,
-        countInStock: req.body.countInStock,
-        rating: req.body.rating,
-        numReviews: req.body.numReviews,
-        isFeature: req.body.isFeature
-      },
-      { new: true }
-    )
-
-    if (!product) {
-      res.status(500).json({ success: false, message: 'Product could not be updated' })
-    }
-    res.status(200).send(product)
-  } catch (error) {
-    res.status(400).json({ success: false, error })
-  }
+  res.status(200).send(updatedProduct)
 })
 
 router.delete('/:id', async (req, res) => {
