@@ -102,7 +102,9 @@ router.put('/:id', uploadOptions.single('image'), async (req, res) => {
   }
 
   const product = await Product.findById(req.params.id)
-  if (!product) return res.status(400).send('Invalid product')
+  if (!product) {
+    return res.status(400).send('Invalid product')
+  }
 
   const file = req.file
   let imagepath
@@ -138,6 +140,37 @@ router.put('/:id', uploadOptions.single('image'), async (req, res) => {
   }
   res.status(200).send(updatedProduct)
 })
+
+router.put(
+  '/gallery-images/:id',
+  uploadOptions.array('images', 10),
+  async (req, res) => {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return res.status(400).json({ success: false, message: 'Invalid Product id' })
+    }
+
+    const files = req.files
+    const imagesPaths = []
+    const basePath = `${req.protocol}://${req.get('host')}/public/uploads/`
+
+    if (files) {
+      files.map((file) => imagesPaths.push(`${basePath}${file.fileName}`))
+    }
+
+    const product = await Product.findByIdAndUpdate(
+      req.params.id,
+      {
+        images: imagesPaths
+      },
+      { new: true }
+    )
+
+    if (!product) {
+      res.status(400).send('Error uploading files')
+    }
+    res.status(200).send(product)
+  }
+)
 
 router.delete('/:id', async (req, res) => {
   if (!mongoose.isValidObjectId(req.params.id)) {
