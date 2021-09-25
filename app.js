@@ -1,3 +1,4 @@
+/* eslint-disable node/no-path-concat */
 const express = require('express')
 const app = express()
 const morgan = require('morgan')
@@ -9,6 +10,7 @@ const usersRouter = require('./routes/users')
 const ordersRouter = require('./routes/orders')
 const authJwt = require('./helpers/jwt')
 const errorHandler = require('./helpers/error-handler')
+const path = require('path')
 
 app.use(cors())
 app.options('*', cors())
@@ -19,6 +21,7 @@ require('dotenv/config')
 app.use(express.json())
 app.use(morgan('tiny'))
 app.use(authJwt())
+app.use('/public/uploads', express.static(path.resolve(__dirname + '/public/uploads')))
 app.use(errorHandler)
 
 const api = process.env.API_URL

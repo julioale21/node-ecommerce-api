@@ -154,7 +154,7 @@ router.put(
     const basePath = `${req.protocol}://${req.get('host')}/public/uploads/`
 
     if (files) {
-      files.map((file) => imagesPaths.push(`${basePath}${file.fileName}`))
+      files.map((file) => imagesPaths.push(`${basePath}${file.filename}`))
     }
 
     const product = await Product.findByIdAndUpdate(
