@@ -4,6 +4,33 @@ Api to manage users, products, categories and orders of a simple ecommerce with 
 
 ## Starting 🚀
 
+### Tools
+
+Node
+
+Express
+
+Nodemon
+
+Mongo DB
+
+Mongoose
+
+JWT
+
+Morgan
+
+Multer
+
+## Demo
+You can test the API in the following route
+
+[https://eshop-node-api.herokuapp.com/](https://eshop-node-api.herokuapp.com/)
+
+and adding the route to the requested resource
+
+
+
 ### Project Structure
 The files are structured as follow:
 
