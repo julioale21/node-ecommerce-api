@@ -31,13 +31,18 @@ app.use(`${api}/categories`, categoriesRouter)
 app.use(`${api}/users`, usersRouter)
 app.use(`${api}/orders`, ordersRouter)
 
-mongoose.connect(process.env.CONNECTION_STRING)
+mongoose.connect(process.env.CONNECTION_STRING, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  dbName: process.env.DB_NAME
+})
   .then(() => {
     console.log('Database connected')
   })
   .catch((err) => console.log(err))
 
-app.listen(3000, () => {
+const port = process.env.PORT || 3000
+app.listen(port, () => {
   console.log(api)
   console.log('app running on http://localhost:3000')
 })
