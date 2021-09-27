@@ -5,16 +5,15 @@ Api to manage users, products, categories and orders of a simple ecommerce with 
 ## Starting 🚀
 
 ### Project Structure
-The project is structured as follow
+The files are structured as follow:
 
- ├── helpers          
- ├── models 
- ├── public
-  ├── uploads          
- ├── routes     
-                   
-   app.js
- └── README.md  
+    ├── helpers          
+    ├── models 
+    ├── public
+        ├── uploads 
+    ├── routes             
+        app.js
+    └── README.md            # The first page that the user will view when will visit the repository
 
 Follow the instructions below to get a copy of the proyect and run it locally
 
